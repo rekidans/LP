@@ -1,0 +1,217 @@
+<<
+/* parser.dlg -- DLG Description of scanner
+ *
+ * Generated from: practica.g
+ *
+ * Terence Parr, Will Cohen, and Hank Dietz: 1989-2001
+ * Purdue University Electrical Engineering
+ * With AHPCRC, University of Minnesota
+ * ANTLR Version 1.33MR33
+ */
+
+#define ANTLR_VERSION	13333
+#include "pcctscfg.h"
+#include "pccts_stdio.h"
+
+#include <string>
+#include <iostream>
+#include <map>
+#include <list>
+#include <vector>
+using namespace std;
+
+// struct to store information about tokens
+typedef struct {
+  string kind;
+  string text;
+} Attrib;
+
+// function to fill token information (predeclaration)
+void zzcr_attr(Attrib *attr, int type, char *text);
+
+// fields for AST nodes
+#define AST_FIELDS string kind; string text;
+#include "ast.h"
+
+// macro to create a new AST node (and function predeclaration)
+#define zzcr_ast(as,attr,ttype,textt) as=createASTnode(attr,ttype,textt)
+AST* createASTnode(Attrib* attr, int ttype, char *textt);
+#include "antlr.h"
+#include "ast.h"
+#include "tokens.h"
+#include "dlgdef.h"
+LOOKAHEAD
+
+void
+#ifdef __USE_PROTOS
+zzerraction(void)
+#else
+zzerraction()
+#endif
+{
+	(*zzerr)("invalid token");
+	zzadvance();
+	zzskip();
+}
+>>
+
+
+%%START
+
+@
+	<<
+		NLA = 1;
+	>>
+
+ENDWHILE
+	<<
+		NLA = ENDWHILE;
+	>>
+
+WHILE
+	<<
+		NLA = WHILE;
+	>>
+
+ENDIF
+	<<
+		NLA = ENDIF;
+	>>
+
+IF
+	<<
+		NLA = IF;
+	>>
+
+LOGPLOT
+	<<
+		NLA = LOGPLOT;
+	>>
+
+PLOT
+	<<
+		NLA = PLOT;
+	>>
+
+NORMALIZE
+	<<
+		NLA = NORMALIZE;
+	>>
+
+POP
+	<<
+		NLA = POP;
+	>>
+
+PUSH
+	<<
+		NLA = PUSH;
+	>>
+
+NOT
+	<<
+		NLA = NOT;
+	>>
+
+AND
+	<<
+		NLA = AND;
+	>>
+
+OR
+	<<
+		NLA = OR;
+	>>
+
+CHECK
+	<<
+		NLA = CHECK;
+	>>
+
+AMEND
+	<<
+		NLA = AMEND;
+	>>
+
+ITH
+	<<
+		NLA = ITH;
+	>>
+
+EMPTY
+	<<
+		NLA = EMPTY;
+	>>
+
+[0-9]+
+	<<
+		NLA = NUM;
+	>>
+
+[0-9a-zA-Z]+
+	<<
+		NLA = ID;
+	>>
+
+\=
+	<<
+		NLA = ASSIG;
+	>>
+
+!=
+	<<
+		NLA = DIFF;
+	>>
+
+==
+	<<
+		NLA = EQUAL;
+	>>
+
+\,
+	<<
+		NLA = COMA;
+	>>
+
+\·
+	<<
+		NLA = CONC;
+	>>
+
+\[
+	<<
+		NLA = OCLA;
+	>>
+
+\]
+	<<
+		NLA = TCLA;
+	>>
+
+\(
+	<<
+		NLA = OPAR;
+	>>
+
+\)
+	<<
+		NLA = TPAR;
+	>>
+
+\<
+	<<
+		NLA = GREAT;
+	>>
+
+\>
+	<<
+		NLA = LESS;
+	>>
+
+[\ \n]
+	<<
+		NLA = SPACE;
+    zzskip();  
+	>>
+
+%%
