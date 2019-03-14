@@ -104,12 +104,6 @@
          |               \__AMEND
          |                       \__def
          |                             \__DP3
-         \__PLOT
-         |      \__def
-         |            \__DP1
-         \__PLOT
-         |      \__def
-         |            \__DP4
          \__WHILE
                  \__!=
                  |    \__ITH

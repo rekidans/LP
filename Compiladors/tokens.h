@@ -131,15 +131,15 @@ extern void function();
 #endif
 
 #ifdef __USE_PROTOS
-void pop_amend(AST**_root);
+void pop_amend_normalize(AST**_root);
 #else
-extern void pop_amend();
+extern void pop_amend_normalize();
 #endif
 
 #ifdef __USE_PROTOS
-void push_normalize(AST**_root);
+void push(AST**_root);
 #else
-extern void push_normalize();
+extern void push();
 #endif
 
 #ifdef __USE_PROTOS
@@ -177,14 +177,12 @@ extern SetWordType zzerr5[];
 extern SetWordType zzerr6[];
 extern SetWordType zzerr7[];
 extern SetWordType zzerr8[];
-extern SetWordType setwd3[];
 extern SetWordType zzerr9[];
+extern SetWordType setwd3[];
 extern SetWordType zzerr10[];
 extern SetWordType zzerr11[];
 extern SetWordType zzerr12[];
 extern SetWordType zzerr13[];
-extern SetWordType setwd4[];
 extern SetWordType zzerr14[];
-extern SetWordType zzerr15[];
-extern SetWordType zzerr16[];
+extern SetWordType setwd4[];
 extern SetWordType setwd5[];

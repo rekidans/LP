@@ -1,5 +1,3 @@
-//antlr -gt practica.g ; dlg -ci parser.dlg scan.c ; g++ -w -o practica practica.c scan.c err.c
-
 
 #header
 <<
@@ -114,7 +112,6 @@ void ASTPrint(AST *a)
 }
 
 bool check_plot(list<pair<int,int> >& dp){
-    dp.sort();
     list<pair<int,int> >::iterator it = dp.begin(), it2 = ++dp.begin();
     while(it2 != dp.end()){
         if((*it).first == (*it2).first) return false;
@@ -146,7 +143,6 @@ void normalize_plot(list<pair<int,int> >& dp){
 }
 
 void amend_plot(list<pair<int,int> >& dp){
-    dp.sort();
     list<pair<int,int> >::iterator it = dp.begin(), it2 = ++dp.begin();
     while(it2 != dp.end()){
         if((*it).first == (*it2).first) it2 = dp.erase(it2);
@@ -234,17 +230,14 @@ list<pair<int,int> > list_evaluation (AST *a){
                     pair<int,int> temp2 = make_pair(f,s);
                     temp.push_back(temp2);
                 }
-                temp.sort();
                 return temp;
             }else if(a->kind == "NORMALIZE"){
                 list<pair<int,int> > temp = list_evaluation(child(a,0));
-                temp.sort();
                 normalize_plot(temp);
                 return temp;
 
             }else if(a->kind == "POP"){
                 list<pair<int,int> > temp = list_evaluation(child(a,0));
-                temp.sort();
                 temp.pop_back();
                 return temp;
 
@@ -259,7 +252,6 @@ list<pair<int,int> > list_evaluation (AST *a){
 
             }else if(a->kind == "AMEND"){
                 list<pair<int,int> > temp = list_evaluation(child(a,0));
-                temp.sort();
                 amend_plot(temp);
                 return temp;
 
@@ -406,25 +398,15 @@ block: OPAR! condition TPAR! linterpretation;
 condition: (NOT^ | ) orcondition;
 orcondition: andcondition (OR^ andcondition)*;
 andcondition: opboolean (AND^ opboolean)*;
-opboolean: (comparation| boolfunction);
+opboolean: (comparation| boolfunction| OPAR! condition TPAR!);
 comparation: value (EQUAL^ | DIFF^| GREAT^|LESS^) value;
 value: (data|datafunction);
 datafunction: ITH^ OPAR! NUM COMA! data TPAR!;
 boolfunction: (EMPTY^| CHECK^) OPAR! data TPAR!;
-function: pop_amend | push_normalize;
-pop_amend: ((POP^|AMEND^)  OPAR! data TPAR!);
-push_normalize: ((PUSH^|NORMALIZE^) OPAR! (data|points|function) (COMA! (data|points|function))* TPAR!);
+function: pop_amend_normalize | push;
+pop_amend_normalize: ((POP^|AMEND^| NORMALIZE^)  OPAR! data TPAR!);
+push: PUSH^ OPAR! (data|points|function) COMA! points TPAR!;
 plot: (PLOT^|LOGPLOT^) OPAR! (data|function) TPAR!;
 data:  (dataset|ID) (CONC! (dataset | ID))*  <<#0=createASTstring(_sibling,"def");>>;
 dataset:  OCLA! points (COMA! points)* TCLA!  <<#0=createASTstring(_sibling,"literal");>>;
 points:  GREAT! NUM COMA! NUM LESS!  <<#0=createASTstring(_sibling,"pair");>>;
-
-
-/*
-Preguntes:
-Com presentar graficament els plots i que fer en el logplot (aplicar logaritme a les "y"?)  -->INTENTAR FER UN PLOT MACO I EL LOGPLOT ES APLICAR EL LOGARITME A LES Y
-Importa l ordre en el que esta guardat el dataset? -->ORDENAR
-
-
-
-*/
