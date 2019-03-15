@@ -189,12 +189,11 @@ void amend_plot(list<pair<int,int> >& dp){
 }
 
 pair<int,int> get_ith(list<pair<int,int> >& dp, int pos){
+  //pos is an valid position of dp in the range [0.. n)
   list<pair<int,int> >::iterator it = dp.begin();
-  for(int i = 0; i < pos; ++i) ++it;
+  advance(it, pos);
+  //for(int i = 0; i < pos; ++i) ++it;
   return *it;
-  
-
-  
 }
 
 
@@ -209,8 +208,8 @@ void draw_plot(const list<pair<int,int> >& dp){
   }
   max+=2;
   vector<vector<string> > plot(max, vector<string>(max));
-  
-    cout << "[";
+  //Print de list of points in the dataset
+  cout << "[";
   it = dp.begin();
   if(it != dp.end()){
     plot[(*it).first][(*it).second] = "X";
@@ -222,8 +221,8 @@ void draw_plot(const list<pair<int,int> >& dp){
     cout << " , " << "<" << (*it).first << "," << (*it).second << ">";
   }
   cout << "]" << endl;
-  
-    for(int i = 0; i < max; ++i){
+  //Draw Plot as a grid
+  for(int i = 0; i < max; ++i){
     for(int j = 0; j < max; ++j){
       if(i == 0 and plot[i][j] != "X") plot[i][j] = "|";
       else if(j == 0 and plot[i][j] != "X") plot[i][j] = "-";

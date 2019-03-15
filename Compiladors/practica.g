@@ -111,6 +111,8 @@ void ASTPrint(AST *a)
   }
 }
 
+
+/// Checks if a dataset is well formed
 bool check_plot(list<pair<int,int> >& dp){
     list<pair<int,int> >::iterator it = dp.begin(), it2 = ++dp.begin();
     while(it2 != dp.end()){
@@ -119,12 +121,9 @@ bool check_plot(list<pair<int,int> >& dp){
         ++it2;
     }
     return true;
-
-
-
-
 }
 
+/// Normalizes the dataset
 void normalize_plot(list<pair<int,int> >& dp){
     list<pair<int,int> >::iterator it = dp.begin();
     int minX = (*it).first, minY = (*it).second;
@@ -137,36 +136,28 @@ void normalize_plot(list<pair<int,int> >& dp){
          (*it).first-=minX;
          (*it).second-=minY;
     }
-
-
-
 }
 
+/// Amends the dataset if needed
 void amend_plot(list<pair<int,int> >& dp){
     list<pair<int,int> >::iterator it = dp.begin(), it2 = ++dp.begin();
     while(it2 != dp.end()){
         if((*it).first == (*it2).first) it2 = dp.erase(it2);
-
         else{
         ++it;
         ++it2;
         }
     }
-
-
-
 }
 
+/// Returns the ith element in the dataset
 pair<int,int> get_ith(list<pair<int,int> >& dp, int pos){
     list<pair<int,int> >::iterator it = dp.begin();
-    for(int i = 0; i < pos; ++i) ++it;
+    advance(it, pos);
     return *it;
-
-
-
 }
 
-
+/// Prints the given dataset as a list of pairs and as a grid
 void draw_plot(const list<pair<int,int> >& dp){
     list<pair<int,int> >::const_iterator it = dp.begin();
     int max;
@@ -178,7 +169,7 @@ void draw_plot(const list<pair<int,int> >& dp){
     }
     max+=2;
     vector<vector<string> > plot(max, vector<string>(max));
-
+    //Print de list of points in the dataset
     cout << "[";
     it = dp.begin();
     if(it != dp.end()){
@@ -191,7 +182,7 @@ void draw_plot(const list<pair<int,int> >& dp){
         cout << " , " << "<" << (*it).first << "," << (*it).second << ">";
     }
     cout << "]" << endl;
-
+    //Draw Plot as a grid
     for(int i = 0; i < max; ++i){
       for(int j = 0; j < max; ++j){
         if(i == 0 and plot[i][j] != "X") plot[i][j] = "|";
@@ -209,7 +200,7 @@ void draw_plot(const list<pair<int,int> >& dp){
 }
 
 
-
+/// Executes the instructions that return a list of pairs
 list<pair<int,int> > list_evaluation (AST *a){
     if(a != NULL){
             if(a->kind == "def"){
@@ -262,7 +253,7 @@ list<pair<int,int> > list_evaluation (AST *a){
 }
 
 
-
+/// Execute the boolean and conditional instructions
 bool boolean_evaluation(AST *a){
     if(a != NULL) {
         if(a->kind == "NOT"){
@@ -306,8 +297,7 @@ bool boolean_evaluation(AST *a){
     }
 }
 
-int count = 0;
-
+/// Executes the general instructions that don't return any value following the AST
 void execute(AST *a) {
     if (a == NULL) return;
     else if (a->kind == "DataPlotsProgram"){
@@ -389,9 +379,9 @@ int main() {
 
 
 plots:   linterpretation <<#0=createASTstring(_sibling,"DataPlotsProgram");>> "@"! ;
-
 linterpretation: (instruction)*  <<#0=createASTstring(_sibling,"list");>>;
 instruction:  ID ASSIG^ (data|function) | plot | while_bucle | if_statement;
+//Conditionals and boolean expressions
 while_bucle: WHILE^  block ENDWHILE!;
 if_statement: IF^ block ENDIF!;
 block: OPAR! condition TPAR! linterpretation;
@@ -400,6 +390,7 @@ orcondition: andcondition (OR^ andcondition)*;
 andcondition: opboolean (AND^ opboolean)*;
 opboolean: (comparation| boolfunction| OPAR! condition TPAR!);
 comparation: value (EQUAL^ | DIFF^| GREAT^|LESS^) value;
+//Functions
 value: (data|datafunction);
 datafunction: ITH^ OPAR! NUM COMA! data TPAR!;
 boolfunction: (EMPTY^| CHECK^) OPAR! data TPAR!;
@@ -407,6 +398,9 @@ function: pop_amend_normalize | push;
 pop_amend_normalize: ((POP^|AMEND^| NORMALIZE^)  OPAR! data TPAR!);
 push: PUSH^ OPAR! (data|points|function) COMA! points TPAR!;
 plot: (PLOT^|LOGPLOT^) OPAR! (data|function) TPAR!;
+/// Data
 data:  (dataset|ID) (CONC! (dataset | ID))*  <<#0=createASTstring(_sibling,"def");>>;
+/// Dataset that form the data
 dataset:  OCLA! points (COMA! points)* TCLA!  <<#0=createASTstring(_sibling,"literal");>>;
+/// Points that form the dataset
 points:  GREAT! NUM COMA! NUM LESS!  <<#0=createASTstring(_sibling,"pair");>>;
