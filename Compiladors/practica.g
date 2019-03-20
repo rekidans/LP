@@ -229,7 +229,7 @@ list<pair<int,int> > list_evaluation (AST *a){
 
             }else if(a->kind == "POP"){
                 list<pair<int,int> > temp = list_evaluation(child(a,0));
-                temp.pop_back();
+                if(not temp.empty()) temp.pop_back();
                 return temp;
 
             }else if(a->kind == "PUSH"){
@@ -271,8 +271,7 @@ bool boolean_evaluation(AST *a){
             int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
             list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
             pair<int, int> comp1, comp2;
-            if ( not temp1.empty() and temp2.empty() ) comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-
+            if (not temp1.empty() and not temp2.empty()) comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
             if(a->kind == "=="){
                 if(temp1.empty() and temp2.empty()) return true;
                 else if (temp1.empty() or temp2.empty()) return false;
