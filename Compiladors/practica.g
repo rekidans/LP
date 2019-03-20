@@ -150,7 +150,7 @@ void amend_plot(list<pair<int,int> >& dp){
     }
 }
 
-/// Returns the ith element in the dataset
+/// Returns the ith element in the dataset.
 pair<int,int> get_ith(list<pair<int,int> >& dp, int pos){
     list<pair<int,int> >::iterator it = dp.begin();
     advance(it, pos);
@@ -267,33 +267,35 @@ bool boolean_evaluation(AST *a){
             return check_plot(temp);
         }else if(a->kind == "EMPTY"){
             return list_evaluation(child(a,0)).empty();
-        }else if(a->kind == "=="){
+        }else{
             int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
             list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-            pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-            return comp1.first == comp2.first and comp1.second == comp2.second;
+            pair<int, int> comp1, comp2;
+            if ( not temp1.empty() and temp2.empty() ) comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
 
-        }else if(a->kind == "!="){
-            int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
-            list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-            pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-            return comp1.first != comp2.first or comp1.second != comp2.second;
+            if(a->kind == "=="){
+                if(temp1.empty() and temp2.empty()) return true;
+                else if (temp1.empty() or temp2.empty()) return false;
+                else return comp1.first == comp2.first and comp1.second == comp2.second;
+            }else if(a->kind == "!="){
+                if(temp1.empty() and temp2.empty()) return false;
+                else if (temp1.empty() or temp2.empty()) return true;
+                else return comp1.first != comp2.first or comp1.second != comp2.second;
+            }else if(a->kind == ">"){
+                if(temp1.empty() and temp2.empty()) return false;
+                else if (temp1.empty()) return false;
+                else if (temp2.empty()) return true;
+                else if(comp1.first == comp2.first) return comp1.second > comp2.second;
+                else return comp1.first > comp2.first;
+            }else if(a->kind == "<"){
+                if(temp1.empty() and temp2.empty()) return false;
+                else if (temp2.empty()) return false;
+                else if (temp1.empty()) return true;
+                else if(comp1.first == comp2.first) return comp1.second < comp2.second;
+                else return comp1.first < comp2.first;
 
-        }else if(a->kind == ">"){
-            int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
-            list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-            pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-            if(comp1.first == comp2.first) return comp1.second > comp2.second;
-            else return comp1.first > comp2.first;
-
-        }else if(a->kind == "<"){
-            int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
-            list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-            pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-            if(comp1.first == comp2.first) return comp1.second < comp2.second;
-            else return comp1.first < comp2.first;
-
-        }
+            }
+          }
     }
 }
 

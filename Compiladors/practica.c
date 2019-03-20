@@ -142,6 +142,8 @@ void ASTPrint(AST *a)
   }
 }
 
+
+/// Checks if a dataset is well formed
 bool check_plot(list<pair<int,int> >& dp){
   list<pair<int,int> >::iterator it = dp.begin(), it2 = ++dp.begin();
   while(it2 != dp.end()){
@@ -150,12 +152,9 @@ bool check_plot(list<pair<int,int> >& dp){
     ++it2;
   }
   return true;
-  
-
-  
-
 }
 
+/// Normalizes the dataset
 void normalize_plot(list<pair<int,int> >& dp){
   list<pair<int,int> >::iterator it = dp.begin();
   int minX = (*it).first, minY = (*it).second;
@@ -168,35 +167,28 @@ void normalize_plot(list<pair<int,int> >& dp){
     (*it).first-=minX;
     (*it).second-=minY;
   }
-  
-
-  
 }
 
+/// Amends the dataset if needed
 void amend_plot(list<pair<int,int> >& dp){
   list<pair<int,int> >::iterator it = dp.begin(), it2 = ++dp.begin();
   while(it2 != dp.end()){
     if((*it).first == (*it2).first) it2 = dp.erase(it2);
-    
-        else{
+    else{
       ++it;
       ++it2;
     }
   }
-  
-
-  
 }
 
+/// Returns the ith element in the dataset.
 pair<int,int> get_ith(list<pair<int,int> >& dp, int pos){
-  //pos is an valid position of dp in the range [0.. n)
   list<pair<int,int> >::iterator it = dp.begin();
   advance(it, pos);
-  //for(int i = 0; i < pos; ++i) ++it;
   return *it;
 }
 
-
+/// Prints the given dataset as a list of pairs and as a grid
 void draw_plot(const list<pair<int,int> >& dp){
   list<pair<int,int> >::const_iterator it = dp.begin();
   int max;
@@ -239,7 +231,7 @@ void draw_plot(const list<pair<int,int> >& dp){
 }
 
 
-
+/// Executes the instructions that return a list of pairs
 list<pair<int,int> > list_evaluation (AST *a){
   if(a != NULL){
     if(a->kind == "def"){
@@ -292,7 +284,7 @@ list<pair<int,int> > list_evaluation (AST *a){
 }
 
 
-
+/// Execute the boolean and conditional instructions
 bool boolean_evaluation(AST *a){
   if(a != NULL) {
     if(a->kind == "NOT"){
@@ -306,80 +298,81 @@ bool boolean_evaluation(AST *a){
       return check_plot(temp);
     }else if(a->kind == "EMPTY"){
       return list_evaluation(child(a,0)).empty();
-    }else if(a->kind == "=="){
+    }else{
       int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
       list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-      pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-      return comp1.first == comp2.first and comp1.second == comp2.second;
+      pair<int, int> comp1, comp2;
+      if ( not temp1.empty() and temp2.empty() ) comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
       
-        }else if(a->kind == "!="){
-      int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
-      list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-      pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-      return comp1.first != comp2.first or comp1.second != comp2.second;
-      
-        }else if(a->kind == ">"){
-      int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
-      list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-      pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-      if(comp1.first == comp2.first) return comp1.second > comp2.second;
-      else return comp1.first > comp2.first;
-      
-        }else if(a->kind == "<"){
-      int pos1 = atoi(child(child(a,0), 0)->kind.c_str()), pos2 = atoi(child(child(a,1), 0)->kind.c_str());
-      list<pair<int,int> > temp1 = list_evaluation(child(child(a,0), 1)),  temp2 = list_evaluation(child(child(a,1), 1));
-      pair<int, int> comp1 = get_ith(temp1, pos1), comp2 = get_ith(temp2, pos2);
-      if(comp1.first == comp2.first) return comp1.second < comp2.second;
-      else return comp1.first < comp2.first;
-      
-        }
+            if(a->kind == "=="){
+        if(temp1.empty() and temp2.empty()) return true;
+        else if (temp1.empty() or temp2.empty()) return false;
+        else return comp1.first == comp2.first and comp1.second == comp2.second;
+      }else if(a->kind == "!="){
+        if(temp1.empty() and temp2.empty()) return false;
+        else if (temp1.empty() or temp2.empty()) return true;
+        else return comp1.first != comp2.first or comp1.second != comp2.second;
+      }else if(a->kind == ">"){
+        if(temp1.empty() and temp2.empty()) return false;
+        else if (temp1.empty()) return false;
+        else if (temp2.empty()) return true;
+        else if(comp1.first == comp2.first) return comp1.second > comp2.second;
+        else return comp1.first > comp2.first;
+      }else if(a->kind == "<"){
+        if(temp1.empty() and temp2.empty()) return false;
+        else if (temp2.empty()) return false;
+        else if (temp1.empty()) return true;
+        else if(comp1.first == comp2.first) return comp1.second < comp2.second;
+        else return comp1.first < comp2.first;
+        
+            }
+    }
   }
 }
 
-int count = 0;
-
+/// Executes the general instructions that don't return any value following the AST
 void execute(AST *a) {
-  if (a == NULL) return;
-  else if (a->kind == "DataPlotsProgram"){
-    execute(child(a,0));
-  }else if (a->kind == "IF"){
-    if(boolean_evaluation(child(a,0))){
-      execute(child(a,1));
-    }
-  }else if (a->kind == "WHILE") {
-    while(boolean_evaluation(child(a,0))){
-      execute(child(a,1));
-    }
-  }else if(a->kind == "="){
-    dps[child(a,0)->text]= list_evaluation(child(a,1));
-  }else if(a->kind == "list"){
-    for (int i = 0; child(a, i) != NULL; ++i) {
-      execute(child(a, i));
-    }
-  }else if(a->kind == "PLOT"){
-    list<pair<int,int> > temp = list_evaluation(child(a,0));
-    cout << "PLOT ";
-    draw_plot(temp);
-    
+if (a == NULL) return;
+else if (a->kind == "DataPlotsProgram"){
+execute(child(a,0));
+}else if (a->kind == "IF"){
+if(boolean_evaluation(child(a,0))){
+execute(child(a,1));
+}
+}else if (a->kind == "WHILE") {
+while(boolean_evaluation(child(a,0))){
+execute(child(a,1));
+}
+}else if(a->kind == "="){
+dps[child(a,0)->text]= list_evaluation(child(a,1));
+}else if(a->kind == "list"){
+for (int i = 0; child(a, i) != NULL; ++i) {
+execute(child(a, i));
+}
+}else if(a->kind == "PLOT"){
+list<pair<int,int> > temp = list_evaluation(child(a,0));
+cout << "PLOT ";
+draw_plot(temp);
+
     }else if(a->kind == "LOGPLOT"){
-    list<pair<int,int> > temp = list_evaluation(child(a,0));
-    list<pair<int,int> >::iterator it = temp.begin();
-    for(; it != temp.end(); ++it){
-      if((*it).second != 0)(*it).second = log((*it).second);
-    }
-    cout << "LOGPLOT";
-    draw_plot(temp);
-  }
-  
+list<pair<int,int> > temp = list_evaluation(child(a,0));
+list<pair<int,int> >::iterator it = temp.begin();
+for(; it != temp.end(); ++it){
+if((*it).second != 0)(*it).second = log((*it).second);
+}
+cout << "LOGPLOT";
+draw_plot(temp);
+}
+
 }
 
 
 int main() {
-  AST *root = NULL;
-  ANTLR(plots(&root), stdin);
-  ASTPrint(root);
-  execute(root);
-  
+AST *root = NULL;
+ANTLR(plots(&root), stdin);
+ASTPrint(root);
+execute(root);
+
 }
 
   
