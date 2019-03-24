@@ -969,15 +969,10 @@ AST **_root;
       data(zzSTR); zzlink(_root, &_sibling, &_tail);
     }
     else {
-      if ( (LA(1)==GREAT) ) {
-        points(zzSTR); zzlink(_root, &_sibling, &_tail);
+      if ( (setwd4[LA(1)]&0x4) ) {
+        function(zzSTR); zzlink(_root, &_sibling, &_tail);
       }
-      else {
-        if ( (setwd4[LA(1)]&0x4) ) {
-          function(zzSTR); zzlink(_root, &_sibling, &_tail);
-        }
-        else {zzFAIL(1,zzerr10,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
-      }
+      else {zzFAIL(1,zzerr10,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
     }
     zzEXIT(zztasp2);
     }

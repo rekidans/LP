@@ -365,9 +365,9 @@ int main() {
 #token EMPTY "EMPTY"
 #token NUM "[0-9]+"
 #token ID "[0-9a-zA-Z]+"
-#token ASSIG "\="
 #token DIFF "!="
 #token EQUAL "=="
+#token ASSIG "\="
 #token COMA "\,"
 #token CONC "\·"
 #token OCLA "\["
@@ -397,7 +397,7 @@ datafunction: ITH^ OPAR! NUM COMA! data TPAR!;
 boolfunction: (EMPTY^| CHECK^) OPAR! data TPAR!;
 function: pop_amend_normalize | push;
 pop_amend_normalize: ((POP^|AMEND^| NORMALIZE^)  OPAR! data TPAR!);
-push: PUSH^ OPAR! (data|points|function) COMA! points TPAR!;
+push: PUSH^ OPAR! (data|function) COMA! points TPAR!;
 plot: (PLOT^|LOGPLOT^) OPAR! (data|function) TPAR!;
 /// Data
 data:  (dataset|ID) (CONC! (dataset | ID))*  <<#0=createASTstring(_sibling,"def");>>;
